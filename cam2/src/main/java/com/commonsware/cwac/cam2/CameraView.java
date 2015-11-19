@@ -203,15 +203,32 @@ public class CameraView extends TextureView implements TextureView.SurfaceTextur
 
     float scaleY;
     float scaleX;
+    boolean paletka = true;
     if (Surface.ROTATION_90==rotation || Surface.ROTATION_270==rotation) {
-      scaleX = (float)previewHeight/viewWidth;
-      scaleY = (float)previewWidth / viewHeight;
-      float coeff = Math.min(scaleX, scaleY);
-      float offset = (previewWidth-viewWidth) / 2 * scaleX;
-      txform.postRotate(-90, viewCenterX-offset, viewCenterY+offset);
-      //txform.postScale(scaleY*scaleX, scaleX*scaleX, viewCenterX, viewCenterY);
-      txform.postScale(scaleY*coeff, scaleX*coeff, viewCenterX, viewCenterY);
+      if (paletka) {
+        scaleX = (float) previewHeight / viewWidth;
+        scaleY = (float) previewWidth / viewHeight;
+        float secScaleX = (float) previewWidth / viewWidth;
+        float secScaleY = (float) previewHeight / viewHeight;
 
+        float coeff = secScaleX;//Math.min(scaleX, scaleY);
+        float offset = (previewHeight - viewHeight) / 2 * secScaleY; // paletka
+        txform.postRotate(-90, viewCenterX - offset, viewCenterY + offset);
+        txform.postScale(scaleY * coeff, scaleX * coeff, viewCenterX, viewCenterY);
+
+
+
+
+
+
+      } else {
+        scaleX = (float)previewHeight/viewWidth;
+        scaleY = (float)previewWidth / viewHeight;
+        float coeff = Math.min(scaleX, scaleY);
+        float offset = (previewWidth-viewWidth) / 2 * scaleX;
+        txform.postRotate(-90, viewCenterX-offset, viewCenterY+offset);
+        txform.postScale(scaleY*coeff, scaleX*coeff, viewCenterX, viewCenterY);
+      }
 
 
     } else {
