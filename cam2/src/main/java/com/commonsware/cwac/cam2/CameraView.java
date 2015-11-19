@@ -186,11 +186,14 @@ public class CameraView extends TextureView implements TextureView.SurfaceTextur
       float secCoeff = Math.min(secScaleX, secScaleY);
 
       float offset = Math.abs(previewWidth - viewWidth) * secCoeff / 2;
-      //if (Surface.ROTATION_270==rotation) {
-      //  offset = -offset;
-      //}
+
       txform.preScale(scaleX / coeff, scaleY / coeff, viewCenterX, viewCenterY);
-      txform.postRotate(90*(rotation-2), viewCenterX - offset, viewCenterY + offset);
+      if (Surface.ROTATION_90==rotation) {
+        txform.postRotate(90 * (rotation - 2), viewCenterX - offset, viewCenterY + offset);
+      } else {
+        txform.postRotate(90 * (rotation - 2), viewCenterX - offset, viewCenterY - offset);
+
+      }
     } else {
       float coeff = Math.max(scaleX, scaleY);
       txform.postScale(scaleX/coeff, scaleY/coeff);
