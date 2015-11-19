@@ -157,11 +157,11 @@ public class CameraView extends TextureView implements TextureView.SurfaceTextur
     boolean isDefaultLandscape=isDeviceDefaultOrientationLandscape(
       getContext());
 
-    if (isDefaultLandscape) {
-      int temp=previewWidth;
-      previewWidth=previewHeight;
-      previewHeight=temp;
-    }
+//    if (isDefaultLandscape) {
+//      int temp=previewWidth;
+//      previewWidth=previewHeight;
+//      previewHeight=temp;
+//    }
 
     RectF rectPreview=new RectF(0, 0, previewHeight, previewWidth);
     float previewCenterX=rectPreview.centerX();
@@ -169,27 +169,56 @@ public class CameraView extends TextureView implements TextureView.SurfaceTextur
 
     if (Surface.ROTATION_90==rotation ||
       Surface.ROTATION_270==rotation) {
-      rectPreview.offset(viewCenterX-previewCenterX,
-        viewCenterY-previewCenterY);
+      //rectPreview.offset(viewCenterX-previewCenterX,
+      //  viewCenterY-previewCenterY);
 
-      txform.setRectToRect(rectView, rectPreview,
-        Matrix.ScaleToFit.FILL);
+//      txform.setRectToRect(rectView, rectPreview,
+//        Matrix.ScaleToFit.CENTER);
 
-      float scale=Math.max((float)viewHeight/previewHeight,
-        (float)viewWidth/previewWidth);
+//      float scale=Math.max((float)viewHeight/previewHeight,
+//        (float)viewWidth/previewWidth);
 
-      txform.postScale(scale, scale, viewCenterX, viewCenterY);
-      txform.postRotate(90*(rotation-2), viewCenterX,
-        viewCenterY);
+   //   txform.postScale(scale, scale, viewCenterX, viewCenterY);
+      //txform.postRotate(90*(rotation-2), viewCenterX,
+        //viewCenterY);
     }
     else {
       if (Surface.ROTATION_180==rotation) {
-        txform.postRotate(180, viewCenterX, viewCenterY);
       }
     }
 
     if (mirror) {
       txform.postScale(-1, 1, viewCenterX, viewCenterY);
+    }
+    rectPreview=new RectF(0, 0, previewWidth, previewHeight);
+
+//    txform.setRectToRect(rectView, rectPreview,
+//            Matrix.ScaleToFit.CENTER);
+
+
+    txform.postScale(0.98f, 0.98f, viewCenterX, viewCenterY); // for debug purposes only
+    if (isDefaultLandscape) {
+      txform.postRotate(90, viewCenterX, viewCenterY);
+    }
+
+    float scaleY;
+    float scaleX;
+    if (Surface.ROTATION_90==rotation || Surface.ROTATION_270==rotation) {
+      scaleX = (float)previewHeight/viewWidth;
+      scaleY = (float)previewWidth / viewHeight;
+      float coeff = Math.min(scaleX, scaleY);
+      float offset = (previewWidth-viewWidth) / 2 * scaleX;
+      txform.postRotate(-90, viewCenterX-offset, viewCenterY+offset);
+      //txform.postScale(scaleY*scaleX, scaleX*scaleX, viewCenterX, viewCenterY);
+      txform.postScale(scaleY*coeff, scaleX*coeff, viewCenterX, viewCenterY);
+
+
+
+    } else {
+      scaleX = (float)previewHeight/viewWidth;
+      scaleY = (float) previewWidth/viewHeight;
+      float coeff = Math.max(scaleX, scaleY);
+      txform.postScale(scaleX/coeff, scaleY/coeff);
     }
 
     setTransform(txform);
