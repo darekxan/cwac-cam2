@@ -176,21 +176,24 @@ public class CameraView extends TextureView implements TextureView.SurfaceTextur
 
     if (Surface.ROTATION_90==rotation || Surface.ROTATION_270==rotation) {
       float secScaleX = (float) previewWidth / viewWidth;
-      //         1.1 =          1900         / 1800
-      //         0.9 =          1700         / 1800
       float secScaleY = (float) previewHeight / viewHeight;
       float coeff = Math.max(secScaleX, secScaleY);
-      float secCoeff = Math.min(secScaleX, secScaleY);
-                              // 1900 / 1.1 * 1800
-      float offset = Math.abs(previewWidth - viewWidth* secScaleY)/2/secScaleY;
-      txform.preScale(scaleX / coeff, scaleY / coeff, viewCenterX, viewCenterY);
-      if (Surface.ROTATION_90==rotation) {
-        txform.postRotate(90 * (rotation - 2), viewCenterX, viewCenterY);
+
+      float offset;
+      if (isDefaultLandscape) {
+        offset = Math.abs(previewHeight - viewHeight * secScaleX) / 2 / secScaleX;
       } else {
-        txform.postRotate(90 * (rotation - 2), viewCenterX, viewCenterY);
+        offset = Math.abs(previewWidth - viewWidth * secScaleY) / 2 / secScaleY;
+      }
+      txform.postScale(scaleX / coeff, scaleY / coeff, viewCenterX, viewCenterY);
+      txform.postRotate(90 * (rotation - 2), viewCenterX, viewCenterY);
+
+      if (isDefaultLandscape) {
+        txform.postTranslate(0, -offset);
+      } else {
+        txform.postTranslate(-offset, 0);
 
       }
-      txform.postTranslate(-offset, 0);
     } else if(Surface.ROTATION_180==rotation) {
       float coeff = Math.max(scaleX, scaleY);
       txform.postScale(scaleX / coeff, scaleY / coeff);
