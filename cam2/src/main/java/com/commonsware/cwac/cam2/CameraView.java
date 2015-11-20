@@ -157,43 +157,45 @@ public class CameraView extends TextureView implements TextureView.SurfaceTextur
     boolean isDefaultLandscape=isDeviceDefaultOrientationLandscape(
       getContext());
 
-    if (isDefaultLandscape) {
-      int temp=previewWidth;
-      previewWidth=previewHeight;
-      previewHeight=temp;
-    } else {
-      if (Surface.ROTATION_180==rotation) {
-          //TODO actually handle?
-      }
-    }
 
     if (mirror) {
       txform.postScale(-1, 1, viewCenterX, viewCenterY);
     }
 
-    txform.postScale(0.98f, 0.98f, viewCenterX, viewCenterY); // for debug purposes only
     if (isDefaultLandscape) {
-      txform.postRotate(90, viewCenterX, viewCenterY);
+      rotation++;
+      if (rotation==Surface.ROTATION_270) {
+        rotation = Surface.ROTATION_90;
+      }
     }
+
+    txform.postScale(0.99f, 0.99f, viewCenterX, viewCenterY); // for debug purposes only
 
     float scaleX = (float) previewHeight / viewWidth;
     float scaleY = (float) previewWidth / viewHeight;
 
     if (Surface.ROTATION_90==rotation || Surface.ROTATION_270==rotation) {
       float secScaleX = (float) previewWidth / viewWidth;
+      //         1.1 =          1900         / 1800
+      //         0.9 =          1700         / 1800
       float secScaleY = (float) previewHeight / viewHeight;
       float coeff = Math.max(secScaleX, secScaleY);
       float secCoeff = Math.min(secScaleX, secScaleY);
-
-      float offset = Math.abs(previewWidth - viewWidth) * secCoeff / 2;
-
+                              // 1900 / 1.1 * 1800
+      float offset = Math.abs(previewWidth - viewWidth* secScaleY)/2/secScaleY;
       txform.preScale(scaleX / coeff, scaleY / coeff, viewCenterX, viewCenterY);
       if (Surface.ROTATION_90==rotation) {
-        txform.postRotate(90 * (rotation - 2), viewCenterX - offset, viewCenterY + offset);
+        txform.postRotate(90 * (rotation - 2), viewCenterX, viewCenterY);
       } else {
-        txform.postRotate(90 * (rotation - 2), viewCenterX - offset, viewCenterY - offset);
+        txform.postRotate(90 * (rotation - 2), viewCenterX, viewCenterY);
 
       }
+      txform.postTranslate(-offset, 0);
+    } else if(Surface.ROTATION_180==rotation) {
+      float coeff = Math.max(scaleX, scaleY);
+      txform.postScale(scaleX / coeff, scaleY / coeff);
+      txform.postRotate(180, viewCenterX, viewCenterY);
+
     } else {
       float coeff = Math.max(scaleX, scaleY);
       txform.postScale(scaleX/coeff, scaleY/coeff);
