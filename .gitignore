@@ -1,0 +1,12 @@
+### Intellij ###
+.idea/
+*.iml
+
+### Gradle ###
+.gradle
+gradle/
+build/
+
+### Android ###
+# Local configuration file (sdk path, etc)
+local.properties
